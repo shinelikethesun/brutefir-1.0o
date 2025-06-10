@@ -1575,8 +1575,8 @@ parse_setting(char field[],
         if (bfconf->realsize != sizeof(float) * 8 &&
             bfconf->realsize != sizeof(double) * 8)
         {
-            sprintf(msg, "invalid float_bits, must be %zd or %zd.\n",
-                    sizeof(float) * 8, sizeof(double) * 8); 
+            sprintf(msg, "invalid float_bits, must be %zu or %zu.\n",
+                    sizeof(float) * 8, sizeof(double) * 8);
             parse_error(msg);
         }
         bfconf->realsize /= 8;
@@ -2556,8 +2556,8 @@ bfconf_init(char filename[],
 	    }
 	} else {
 	    pfilters[n]->fctrl.coeff = -1;
-	    for (i = 0;
-                 coeffs[i] != NULL && coeffs[i]->coeff.name != NULL;
+            for (i = 0;
+                 coeffs[i] != NULL && coeffs[i]->coeff.name[0] != '\0';
                  i++)
             {
 		if (strcmp(coeffs[i]->coeff.name,

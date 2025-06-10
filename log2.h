@@ -28,7 +28,7 @@ log2_roof(uint32_t x)
 {
     int lg;
     
-    for (lg = 31; (x & (1 << lg)) == 0 && lg > 0; lg--);
+    for (lg = 31; (x & (1u << lg)) == 0 && lg > 0; lg--);
     if (lg == 0 || (lg == 31 && (x & 0x7FFFFFFF) != 0)) {
 	return -1;
     }

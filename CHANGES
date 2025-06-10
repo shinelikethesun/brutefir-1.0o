@@ -22,12 +22,8 @@ BruteFIR v1.0l                                                   October 6, 2013
 	   SND_PCM_FORMAT_S24_LE (same for BE of course). Also added possibility
 	   to use Alsa syntax "S24_3LE" in config file (means same as the old
 	   "S24_LE").
-	 * Refreshed JACK I/O module to make up to date with current API
-	   versions.
 
 BruteFIR v1.0k                                                    March 31, 2009
-	* Refreshed ALSA and JACK I/O modules to make them up to date with
-	  current API versions.
 
 BruteFIR v1.0j                                                     March 5, 2009
 	* Fixed a memory leak in the CLI.
@@ -40,7 +36,6 @@ BruteFIR v1.0i                                                   October 8, 2006
 
 BruteFIR v1.0h                                                     July 12, 2006
 	* Added subsample delay feature
-	* Added support for naming JACK ports.
 	* Added support for text format in file I/O module.
 	* Adjusted realtime priority logic modules (lowered it compared to the
 	  filter process.
@@ -62,7 +57,6 @@ BruteFIR v1.0e                                                     June 28, 2005
 BruteFIR v1.0d                                                     June 12, 2005
 	* Fixed a fatal file descriptor bug introduced in v1.0b, causing
 	  problems with multiple inputs/outputs.
-	* Added 'priority' parameter to JACK I/O module and made some minor
 	  adjustments.
 	* Fixed ALSA I/O module bug, causing it to get stuck in infinit loop on
 	  some hardware.
@@ -72,8 +66,6 @@ BruteFIR v1.0c                                                   January 4, 2005
 	* Ooops, CLI module did not accept '\r' in v1.0b, fixed that.
 
 BruteFIR v1.0b                                                 November 21, 2004
-	* JACK I/O module now allows for multiple BruteFIR instances, and it
-	  no longer necessary to connect to external ports at startup.
 	* Serial line and pipe support for the CLI module.
 	* Bug fix in equaliser rendering, which was triggered in some situations
 	  (thanks to Tero Kontkanen for the bug fix).
@@ -89,12 +81,10 @@ BruteFIR v1.0a                                                    August 7, 2004
 	  two example coefficient files.
 
 BruteFIR v1.0                                                     April 21, 2004
-	* An OSS I/O module was added.
 	* Powersave now supports analog inputs (set a noise level).
 	* Fixed some ugly castings and other stuff causing compiler warnings.
 	* Fixed -fPIC likning issue.
 	* Fixed I/O subsystem bug which caused full duplex file descriptors to
-	  fail (used by the new OSS I/O module).
 	* Now it is possible to compile on FreeBSD and Solaris again.
         * Clearer license statement (no license change though, still GPL).
 
@@ -108,7 +98,6 @@ BruteFIR v0.99n                                                February 22, 2004
 	  bench2_config but with crossfade activated and a script using it, so
 	  the crossfade cost (ends up in the convolve column) can easily be
 	  benchmarked.
-	* Do not use posix_memalign() in buggy glibc versions.
 	* Corrected ALSA pcm linking code.
 
 BruteFIR v0.99m                                                 January 17, 2004
@@ -172,14 +161,12 @@ BruteFIR v0.99i                                                February 11, 2003
 
 BruteFIR v0.99h                                                 February 9, 2003
 	* Added new sample native endian (NE) sample formats.
-	* Support for auto sample format (only JACK I/O module so far)
 	* Real-time index and overflow detection now works with callback I/O.
 	* Mixing blocking input with callback output now works.
 	* Added a simple automatic load balancer for multiple CPUs.
 
 BruteFIR v0.99g                                                 February 2, 2003
 	* Added support for callback I/O.
-	* Added JACK I/O module.
 	* Proper synchronised start of CLI script.
 	* Added 'echo' option to CLI module, for printing commands to console.
 	* Fixed multiple input devices input mute bug.

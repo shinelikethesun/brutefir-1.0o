@@ -47,8 +47,6 @@ table, th, td {
 <li><a href="brutefir.html#bfio">I/O modules</a>
 <ul>
 <li><a href="brutefir.html#bfio_alsa">ALSA sound card I/O (alsa)</a>
-<li><a href="brutefir.html#bfio_oss">OSS sound card I/O (oss)</a>
-<li><a href="brutefir.html#bfio_jack">JACK audio server I/O (jack)</a>
 <li><a href="brutefir.html#bfio_file">Raw PCM file I/O (file)</a>
 <li><a href="brutefir.html#bfio_own">Writing your own I/O module</a>
 </ul>
@@ -106,12 +104,10 @@ should use S32_LE now to get the old behavior.
 <p><strong>2013-10-06</strong><br>
 BruteFIR v1.0l. Refreshed code to compile well on x86-64, dropped
 3Dnow support and replaced the hand-coded SSE with SSE C code, and
-refreshed JACK and ALSA I/O modules to catch up with changes in the
 APIs. Also fixed a filter indexing bug in the <code>cffa</code> CLI
 command.
 
 <p><strong>2009-03-31</strong><br>
-BruteFIR v1.0k. Refreshed JACK and ALSA I/O modules to catch up with
 changes in the APIs.
 
 <p><strong>2009-03-05</strong><br>
@@ -170,7 +166,6 @@ not this year.
 <p><strong>2006-07-12</strong><br>
 BruteFIR v1.0h. Added a sub-sample delay function (that is delays
 smaller than one sample can be specified), support for text format in
-the file I/O module, and support for naming ports in the JACK I/O
 module.
 
 <p><strong>2006-03-30</strong><br>
@@ -184,7 +179,6 @@ BruteFIR v1.0e. Fix to work with GCC 4.0.
 
 <p><strong>2005-06-12</strong><br>
 Released a minor maintenance release, 1.0d. Contains some minor
-adjustments to the JACK I/O module, and a fatal bug fix concerning
 multiple inputs/outputs, which was introduced in 1.0b.
 
 <p><strong>2005-01-04</strong><br>
@@ -192,8 +186,6 @@ BruteFIR v1.0c. Mistake in 1.0b caused the CLI module not accepting
 return characters, causing problems for telnet operation. Fixed that.
 
 <p><strong>2004-11-21</strong><br>
-BruteFIR v1.0b. Updated the JACK I/O module, it is now possible to run
-several BruteFIR instances using JACK at the same time, and it is not
 necessary to connect to external ports at startup. The CLI can now
 take commands from a serial line. Additionally, a couple of remaining
 bugs in the equalizer module have been fixed.
@@ -203,9 +195,6 @@ BruteFIR v1.0a. Minor update, removed the coefficient set limit and
 updated the example configuration files in the package.
 
 <p><strong>2004-04-21</strong><br>
-BruteFIR v1.0. I felt it was time to release 1.0 now. I have fixed up
-the code so it compiles on FreeBSD and Solaris again, and I added an
-OSS module, which makes BruteFIR truly usable on FreeBSD platforms.
 
 <p><strong>2004-02-22</strong><br>
 BruteFIR v0.99n. As suspected, the merge function was not good enough,
@@ -252,7 +241,6 @@ and a simple automatic load balancer for multi-processor machines.
 
 <p><strong>2003-02-02</strong><br>
 BruteFIR v0.99g. This release adds support for callback I/O. One
-callback I/O module is available, supporting JACK. This support means
 that the program has went through quite radical reorganizations, so
 something might be broke. If you discover any problems, please let me know.
 
@@ -477,8 +465,7 @@ FFTW library <a href="brutefir.html#fftw">[7]</a> for the Fast Fourier
 Transform (FFT, <a href="brutefir.html#cooley_tukey">[5]</a>)
 calculations, and ALSA, the Advanced Linux Sound 
 Architecture <a href="brutefir.html#alsa">[2]</a>, is the preferred
-way of interfacing sound cards, although OSS, Open Sound System <a
-href="brutefir.html#oss">[25]</a>, is supported as well. The main
+way of interfacing sound cards. The main
 features are:
 
 <ul>
@@ -798,10 +785,6 @@ though). Apart from the basic stuff you must also have FFTW3 installed
 work). FFTW3 must be compiled for both double and single precision.
 <p>
 If you want sound card support, it is recommended to use ALSA on Linux
-platforms, and when that is not available, OSS can be used.
-<p>
-If you want to use the JACK support, you need an up to date version of
-JACK installed.
 <p>
 Be sure that you use an official GCC compiler when compiling
 BruteFIR. One user reported bad sound quality (noise artifacts in the
@@ -1834,74 +1817,6 @@ BruteFIR, and thus it will not abort when that occurs. Just set the
 <code>ignore_xrun</code> parameter to true (example: <code>"alsa" { device:
 "hw:1"; ignore_xrun: true; }</code>).
 
-<h3 id="bfio_oss">OSS sound card I/O (oss)</h3>
-<p>
-The OSS I/O module (named "oss") provides sound card I/O through the
-OSS API. It has only one parameter, <code>device</code>, which points out
-the device to open. Example: <code>"oss" { device: "/dev/dsp"; }</code>.
-<p>
-The I/O module supports OSS multi-channel and full duplex modes.
-
-<h3 id="bfio_jack">JACK audio server I/O (jack)</h3>
-<p>
-The JACK I/O module (named "jack") provides BruteFIR with support for
-the low-latency JACK audio server <a
-href="brutefir.html#jack">[23]</a>. JACK is an audio server under
-development, and the goal for the JACK I/O module is that it should be
-compatible with the current CVS version.
-<p>
-To avoid putting I/O-delay into the JACK graph, the JACK buffer size
-should be set to the same as the BruteFIR partition size. It is
-however possible to set the JACK buffer size to a smaller
-value. The I/O-delay in number of JACK buffers as seen by
-following JACK clients will be:
-
-<pre>
-2 * &lt;BruteFIR partition size&gt; / &lt;JACK buffer size&gt; - 2
-</pre>
-
-<p>
-Note that both the JACK buffer size and BruteFIR period size is always
-a power of two.
-<p>
-Currently, the JACK I/O module assumes that jackd is run with the -R
-parameter, at its default client realtime priority which is 9.
-<p>
-The names of the BruteFIR ports will be "brutefir:input-X" for the
-inputs, and "brutefir:output-X", where X is the channel index. The
-JACK client name which is per default "brutefir" can be changed, by
-setting "clientname" (example: <code>clientname: "brutefir-A";</code>). It
-is a global setting, and if used it must be set in the first JACK
-device clause (the first from the top in the configuration file). The
-clientname will change the port name prefix as well (the prefix is the
-client name). If multiple BruteFIR instances should be run, they must
-have different client names, or else the port names will collide.
-<p>
-If the local ports should be connected to other JACK ports at startup,
-the setting <code>ports</code> is used, where the associated string values
-are the names of the ports to connect to. Examples: 
-<code>"jack" { ports: "alsa_pcm:capture_1", "alsa_pcm:capture_2"; }</code>
-for input, and <code>"jack" { ports: "alsa_pcm:playback_1",
-"alsa_pcm:playback_2"; }</code> for output. The port listing must be set
-to the same amount as the number of channels for the device. However,
-empty strings could be used if a specific channel index should not be
-connected, for example: <code>"jack" { ports: "", "alsa_pcm:capture_2";
-}</code> will only connect the second port.
-<p>
-It is also possible to optionally specify the port names to other than
-the default naming, like this: <code>"jack" { ports:
-"alsa_pcm:capture_1"/"in-A"; }</code>, that is adding a slash and
-specifying a name after that, this will replace the default "input-X"
-for inputs and "output-X" for outputs. If a port should not be
-connected but still be named, the first string is empty, like this:
-<code>"jack" { ports: ""/"in-A"; }</code>.
-<p>
-If no ports should be connected, and the client name is left to the
-default, the JACK device clause is empty (<code>"jack" { };</code>).
-<p>
-The sample format for the JACK device should be set to <code>AUTO</code>,
-which will be the JACK sample format (floating point).
-
 <h3 id="bfio_file">Raw PCM file I/O (file)</h3>
 <p>
 The raw PCM file I/O module (named "file") is used to read and write
@@ -2430,20 +2345,12 @@ href="http://freshmeat.net/projects/drc/">http://freshmeat.net/projects/drc</a>.
 A program which generates room correction FIR filters to be used in
 HiFi systems.
 
-<li id="jack">P. Davis et al <em>JACK audio server</em>. <a
-href="http://jackit.sourceforge.net/">http://jackit.sourceforge.net/</a>.<br>
-A low-latency audio server, written primarily for the GNU/Linux
-operating system.
 
 <li id="schedlat">A. Morton <em>Linux Scheduling Latency</em>. <a
 href="http://www.zip.com.au/~akpm/linux/schedlat.html">http://www.zip.com.au/~akpm/linux/schedlat.html</a>.<br>
 A collection of notes and tools related to an effort to decrease the
 typical scheduling latency of the 2.4.x kernel. 
 
-<li id="oss"><em>Open Sound System</em>. <a
-href="http://www.opensound.com">http://www.opensound.com</a>.<br>
-A highly portable sound card API available on a large variation of
-(Unix) platforms.
 
 </ol>
 <br>

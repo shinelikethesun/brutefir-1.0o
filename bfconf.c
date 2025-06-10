@@ -2556,8 +2556,8 @@ bfconf_init(char filename[],
 	    }
 	} else {
 	    pfilters[n]->fctrl.coeff = -1;
-	    for (i = 0;
-                 coeffs[i] != NULL && coeffs[i]->coeff.name != NULL;
+            for (i = 0;
+                 coeffs[i] != NULL && coeffs[i]->coeff.name[0] != '\0';
                  i++)
             {
 		if (strcmp(coeffs[i]->coeff.name,

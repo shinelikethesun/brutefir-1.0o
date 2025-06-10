@@ -49,7 +49,10 @@ BFIO_FILE_OBJS	= bfio_file.fpic.o
 BFIO_ALSA_LIBS	= -lasound
 BFIO_ALSA_OBJS	= bfio_alsa.fpic.o emalloc.fpic.o inout.fpic.o
 
+BFIO_OSS_OBJS	= bfio_oss.fpic.o emalloc.fpic.o
 
+BFIO_JACK_LIBS	= -ljack
+BFIO_JACK_OBJS	= bfio_jack.fpic.o emalloc.fpic.o inout.fpic.o
 
 BFLOGIC_CLI_OBJS = bflogic_cli.fpic.o inout.fpic.o
 BFLOGIC_EQ_OBJS	= bflogic_eq.fpic.o emalloc.fpic.o shmalloc.fpic.o
@@ -83,16 +86,24 @@ CC_FLAGS += -Wa,-xarch=v8plus
 endif
 BRUTEFIR_LIBS	+= -ldl
 LDMULTIPLEDEFS	= -Xlinker --allow-multiple-definition
-
+# assume that we have oss and jack, alsa being linux-only
+ifeq ($(UNAME),Linux)
+LIB_TARGETS	+= alsa.bfio
 endif
+LIB_TARGETS	+= oss.bfio
+LIB_TARGETS	+= jack.bfio
+endif
+
 # FreeBSD
 ifeq ($(UNAME),FreeBSD)
 ifeq ($(UNAME_M),i386)
 BRUTEFIR_OBJS	+= $(BRUTEFIR_IA32_OBJS)
 endif
+# assume that we have oss
+LIB_TARGETS	+= oss.bfio
 endif
 
-TARGETS         = $(BIN_TARGETS) $(LIB_TARGETS)
+TARGETS		= $(BIN_TARGETS) $(LIB_TARGETS)
 
 ###################################
 # Targets
@@ -119,7 +130,13 @@ alsa.bfio: $(BFIO_ALSA_OBJS)
 	$(LD) $(LD_SHARED) $(LDFLAGS) $(CC_FPIC) $(LIBPATHS) -o $@ $(BFIO_ALSA_OBJS) $(BFIO_ALSA_LIBS) -lc
 	$(CHMOD) $(CHMOD_REMOVEX) $@
 
+oss.bfio: $(BFIO_OSS_OBJS)
+	$(LD) $(LD_SHARED) $(LDFLAGS) $(CC_FPIC) $(LIBPATHS) -o $@ $(BFIO_OSS_OBJS) -lc
+	$(CHMOD) $(CHMOD_REMOVEX) $@
 
+jack.bfio: $(BFIO_JACK_OBJS)
+	$(LD) $(LD_SHARED) $(LDFLAGS) $(CC_FPIC) $(LIBPATHS) -o $@ $(BFIO_JACK_OBJS) $(BFIO_JACK_LIBS) -lc
+	$(CHMOD) $(CHMOD_REMOVEX) $@
 
 file.bfio: $(BFIO_FILE_OBJS)
 	$(LD) $(LD_SHARED) $(LDFLAGS) $(CC_FPIC) $(LIBPATHS) -o $@ $(BFIO_FILE_OBJS) -lc
@@ -139,5 +156,6 @@ install: $(BIN_TARGETS) $(LIB_TARGETS)
 	install $(LIB_TARGETS) $(INSTALL_PREFIX)/lib/brutefir
 
 clean:
-	rm -f *.core core bfconf_lexical.c $(BRUTEFIR_OBJS) $(BFIO_FILE_OBJS) \
-	$(BFLOGIC_CLI_OBJS) $(BFLOGIC_EQ_OBJS) $(BFIO_ALSA_OBJS) $(TARGETS)
+	rm -f *.core core bfconf_lexical.c $(BRUTEFIR_OBJS) $(BFIO_FILE_OBJS)  \
+$(BFLOGIC_CLI_OBJS) $(BFLOGIC_EQ_OBJS) $(BFIO_ALSA_OBJS) $(BFIO_OSS_OBJS) \
+$(BFIO_JACK_OBJS) $(TARGETS)

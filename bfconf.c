@@ -1575,8 +1575,8 @@ parse_setting(char field[],
         if (bfconf->realsize != sizeof(float) * 8 &&
             bfconf->realsize != sizeof(double) * 8)
         {
-            sprintf(msg, "invalid float_bits, must be %zd or %zd.\n",
-                    sizeof(float) * 8, sizeof(double) * 8); 
+            sprintf(msg, "invalid float_bits, must be %zu or %zu.\n",
+                    sizeof(float) * 8, sizeof(double) * 8);
             parse_error(msg);
         }
         bfconf->realsize /= 8;
